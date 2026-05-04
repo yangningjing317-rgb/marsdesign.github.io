@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mars Habitat Design Platform</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell" id="appShell">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="mission-mark" aria-hidden="true">
+            <span></span>
+          </div>
+          <div>
+            <h1>Mars Habitat Design Platform</h1>
+            <p>Design a Mars Habitat of <strong>1000 km²</strong></p>
+          </div>
+        </div>
+
+        <label class="team-field">
+          <span>Team</span>
+          <input id="teamName" type="text" placeholder="Enter team name" />
+        </label>
+
+        <button class="top-action" id="scaleFocusBtn" type="button" title="Set scale">
+          <span class="icon ruler-icon"></span>
+          Scale
+        </button>
+        <button class="top-action" id="tutorialBtn" type="button" title="Open tutorial">
+          Tutorial
+        </button>
+        <button class="top-action" id="saveBtn" type="button" title="Save locally">
+          <span class="icon save-icon"></span>
+          Save
+        </button>
+        <button class="top-action" id="exportBtn" type="button" title="Export JPG design image and project report">
+          <span class="icon export-icon"></span>
+          Export
+        </button>
+        <button class="top-action primary" id="presentationBtn" type="button" title="Enter presentation mode">
+          <span class="icon present-icon"></span>
+          Present
+        </button>
+
+        <label class="difficulty">
+          <span>Student Level</span>
+          <select id="difficultyLevel">
+            <option value="level1">Level 1 | Starter Planner</option>
+            <option value="level2" selected>Level 2 | Independent Designer</option>
+            <option value="level3">Level 3 | Challenge Engineer</option>
+          </select>
+        </label>
+
+        <div class="step-pill" id="stepPill">Step 1 · Review the Mission</div>
+      </header>
+
+      <main class="workspace">
+        <aside class="library-panel" aria-label="Asset library">
+          <div class="panel-title">
+            <div>
+              <h2>Asset Library</h2>
+              <p>Click or drag assets from the 8 social function categories</p>
+            </div>
+          </div>
+          <div class="category-list" id="categoryList"></div>
+        </aside>
+
+        <section class="canvas-stage" aria-label="Mars habitat planning canvas">
+          <div class="canvas-topline">
+            <div>
+              <strong>Planning Canvas</strong>
+              <span id="gridInfoText">1000 km² boundary · 40 × 25 grid · each small square has a 1 cm side length</span>
+            </div>
+            <div class="canvas-hints">
+              <span id="activeToolHint">Current tool: Select</span>
+              <span id="canvasScaleNote">Scale: 1 : ______ | On the map, 1 cm = ______ km in real life</span>
+            </div>
+          </div>
+
+          <div class="canvas-wrap" id="canvasWrap">
+            <div class="mars-canvas" id="marsCanvas" tabindex="0">
+              <div class="mars-surface layer-map" data-layer="map"></div>
+              <div class="planning-boundary"></div>
+              <div class="grid-layer layer-grid" id="gridLayer" data-layer="grid"></div>
+              <svg class="drawing-layer layer-zones" id="drawingLayer" data-layer="zones"></svg>
+              <svg class="path-layer layer-zones" id="pathLayer" data-layer="zones"></svg>
+              <div class="object-layer layer-buildings" id="objectLayer" data-layer="buildings"></div>
+              <div class="annotation-layer layer-labels" id="annotationLayer" data-layer="labels"></div>
+              <div class="resize-box" id="resizeBox" hidden></div>
+            </div>
+          </div>
+
+          <div class="selection-card" id="selectionCard" hidden>
+            <div class="selection-head">
+              <strong id="selectedKind">Selected Item</strong>
+              <button id="closeSelection" type="button" title="Close">×</button>
+            </div>
+            <label>Name <input id="selectedName" type="text" /></label>
+            <label>Social Function <select id="selectedFunction"></select></label>
+            <label>Actual Area
+              <span class="unit-input area-unit"><input id="selectedArea" type="text" placeholder="Enter a number" /><span>km²</span></span>
+            </label>
+            <label>Notes <textarea id="selectedNote" rows="2" placeholder="Design reason or user need"></textarea></label>
+            <div class="mini-controls">
+              <button id="rotateLeftBtn" type="button">Rotate -15°</button>
+              <button id="rotateRightBtn" type="button">Rotate +15°</button>
+              <button id="scaleDownBtn" type="button">Scale Down</button>
+              <button id="scaleUpBtn" type="button">Scale Up</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="task-panel" aria-label="Mission and instructions">
+          <div class="panel-title right-title">
+            <div>
+              <h2>Mission Guide</h2>
+              <p>Mission, scale, area records, and population needs</p>
+            </div>
+          </div>
+
+          <div class="right-tabs" role="tablist">
+            <button class="tab active" data-tab="mission" type="button">Mission</button>
+            <button class="tab" data-tab="math" type="button">Math Records</button>
+            <button class="tab" data-tab="people" type="button">Population Needs</button>
+            <button class="tab" data-tab="reflection" type="button">Reflection</button>
+          </div>
+
+          <div class="tab-panel active" id="tab-mission">
+            <section class="guide-card">
+              <h3>Class Mission</h3>
+              <p>Your Mars habitat has a fixed total area of <strong>1000 square kilometers</strong>. Use community needs to make your own decisions about zones, scale, and resource allocation.</p>
+              <p>You decide the functional zones. There is no single correct answer.</p>
+            </section>
+            <section class="guide-card" id="levelGuide">
+              <h3>Student Level</h3>
+              <p id="levelGuideText">Level 2: Complete the scale, zones, and area records independently, then explain your resource allocation choices.</p>
+            </section>
+            <section class="steps-card">
+              <h3>Learning Flow</h3>
+              <ol id="stepList"></ol>
+            </section>
+            <section class="check-card">
+              <h3>Checklist</h3>
+              <label><input type="checkbox" /> I reviewed the needs of the 8 representative residents.</label>
+              <label><input type="checkbox" /> I set my own map scale.</label>
+              <label><input type="checkbox" /> I manually labeled the actual area of each building.</label>
+              <label><input type="checkbox" /> I checked whether my function ratios make sense.</label>
+            </section>
+          </div>
+
+          <div class="tab-panel" id="tab-math">
+            <section class="guide-card scale-card" id="scaleModule">
+              <h3>Scale Setting</h3>
+              <label>Scale: 1 :
+                <input id="scaleRatio" type="text" placeholder="Example: 100000" />
+              </label>
+              <label class="inline-unit">On the map, 1 cm =
+                <span class="unit-input"><input id="scaleKm" type="text" placeholder="Student entry" /><span>km in real life</span></span>
+              </label>
+              <p class="fixed-grid-note">The design area is fixed at a <strong>40 × 25 grid</strong>. Each small square has a <strong>1 cm</strong> side length on the map.</p>
+              <button id="applyScaleBtn" type="button">Update Scale Note Outside the Map</button>
+              <p>Set your scale first. The platform will not calculate conversions for you.</p>
+              <p>Write your scale clearly as part of your own mathematical decision.</p>
+            </section>
+
+            <section class="guide-card allocation-card">
+              <h3>Function Area / Ratio Record</h3>
+              <p>Use the fixed total area of 1000 square kilometers. Think carefully and enter each function's area and percentage yourself.</p>
+              <div class="allocation-table" id="allocationTable"></div>
+            </section>
+
+            <section class="guide-card building-records">
+              <h3>Building Actual Area Records</h3>
+              <p>Use your map to manually label the actual area of each building.</p>
+              <div id="buildingRecords"></div>
+            </section>
+          </div>
+
+          <div class="tab-panel" id="tab-people">
+            <section class="people-intro">
+              <h3>Population Needs</h3>
+              <p>A community is not an abstract space. It serves real people. Click a card to view space needs and design ideas.</p>
+            </section>
+            <div class="people-grid" id="peopleGrid"></div>
+          </div>
+
+          <div class="tab-panel" id="tab-reflection">
+            <section class="guide-card">
+              <h3>Design Reflection</h3>
+              <label>Resource Allocation Reason
+                <textarea id="resourceReason" rows="4" placeholder="How you divide social resources shows what you think matters most."></textarea>
+              </label>
+              <label>Fairness, Inclusion, and Peaceful Community Life
+                <textarea id="equityReason" rows="4" placeholder="Think: whose needs does your design take care of?"></textarea>
+              </label>
+              <label>Habitat Life Highlights
+                <textarea id="lifeReason" rows="4" placeholder="A habitat should support survival, but also help people live well."></textarea>
+              </label>
+            </section>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="tool-dock" aria-label="Bottom toolbar">
+        <button class="tool active" data-tool="select" type="button" title="Select tool"><span class="icon pointer-icon"></span><span>Select</span></button>
+        <button class="tool" data-tool="pan" type="button" title="Pan canvas"><span class="icon hand-icon"></span><span>Pan</span></button>
+        <div class="zone-tool-group" id="zoneToolGroup">
+          <button class="tool zone-main-tool" id="zoneToolMenuBtn" type="button" title="Functional zone planning">
+            <span class="icon zone-icon"></span><span>Function Zone</span>
+          </button>
+          <div class="zone-shape-menu" id="zoneShapeMenu" hidden>
+            <button class="zone-shape-option active" data-zone-tool="zone" type="button"><span class="icon zone-icon"></span><span>Rectangle Zone</span></button>
+            <button class="zone-shape-option" data-zone-tool="circleZone" type="button"><span class="icon circle-zone-icon"></span><span>Circle Zone</span></button>
+            <button class="zone-shape-option" data-zone-tool="freeformZone" type="button"><span class="icon freeform-zone-icon"></span><span>Irregular Zone</span></button>
+          </div>
+        </div>
+        <button class="tool" data-tool="path" type="button" title="Draw a road or connection path"><span class="icon line-icon"></span><span>Path</span></button>
+        <button class="tool" data-tool="label" type="button" title="Add text label"><span class="icon text-icon"></span><span>Label</span></button>
+        <button class="tool" data-tool="legend" type="button" title="Add legend"><span class="icon legend-icon"></span><span>Legend</span></button>
+        <span class="dock-divider"></span>
+        <button class="dock-action" id="undoBtn" type="button" title="Undo"><span class="icon undo-icon"></span></button>
+        <button class="dock-action" id="redoBtn" type="button" title="Redo"><span class="icon redo-icon"></span></button>
+        <button class="dock-action" id="copyBtn" type="button" title="Copy"><span class="icon copy-icon"></span></button>
+        <button class="dock-action danger" id="deleteBtn" type="button" title="Delete"><span class="icon delete-icon"></span></button>
+        <span class="dock-divider"></span>
+        <button class="dock-action toggled" id="gridToggle" type="button" title="Grid on/off"><span class="icon grid-icon"></span></button>
+        <button class="dock-action" id="layerToggleBtn" type="button" title="Layer controls"><span class="icon layers-icon"></span></button>
+        <button class="dock-action" id="resetViewBtn" type="button" title="Reset view"><span class="icon home-icon"></span></button>
+        <div class="layer-menu" id="layerMenu" hidden>
+          <label><input type="checkbox" data-layer-toggle="map" checked /> Base Map</label>
+          <label><input type="checkbox" data-layer-toggle="grid" checked /> Grid Layer</label>
+          <label><input type="checkbox" data-layer-toggle="buildings" checked /> Building Layer</label>
+          <label><input type="checkbox" data-layer-toggle="zones" checked /> Zone Layer</label>
+          <label><input type="checkbox" data-layer-toggle="labels" checked /> Label Layer</label>
+        </div>
+      </footer>
+
+      <section class="presentation-overlay" id="presentationOverlay" hidden>
+        <header>
+          <div>
+            <p>Class Presentation Mode</p>
+            <h2 id="presentationTitle">Mars Habitat Design Platform</h2>
+          </div>
+          <button id="exitPresentationBtn" type="button">Exit Presentation</button>
+        </header>
+        <div class="presentation-grid">
+          <div class="presentation-map" id="presentationMap"></div>
+          <aside>
+            <section>
+              <h3>Scale</h3>
+              <p id="presentationScale">Scale: 1 : ______ | On the map, 1 cm = ______ km in real life</p>
+            </section>
+            <section>
+              <h3>Function Distribution</h3>
+              <div id="presentationAllocation"></div>
+            </section>
+            <section>
+              <h3>Response to Population Needs</h3>
+              <p>Explain whose needs your design supports and why you allocated space this way.</p>
+            </section>
+            <section>
+              <h3>Design Highlights</h3>
+              <p id="presentationHighlights">Complete this in your design reflection.</p>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </div>
+
+    <section class="tour-overlay" id="tourOverlay" aria-label="Step-by-step platform guide" hidden>
+      <div class="tour-scrim"></div>
+      <div class="tour-focus" id="tourFocus"></div>
+      <div class="tour-popover" id="tourPopover">
+        <div class="tour-progress" id="tourProgress">1 / 10</div>
+        <h2 id="tourTitle">Welcome to the Mars Habitat Design Platform</h2>
+        <p id="tourText">Follow the prompts to learn the workspace step by step.</p>
+        <div class="tour-actions">
+          <button id="tourSkipBtn" type="button">Skip</button>
+          <button id="tourPrevBtn" type="button">Back</button>
+          <button id="tourNextBtn" type="button">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="tutorial-overlay" id="tutorialOverlay" aria-label="Platform tutorial" hidden>
+      <div class="tutorial-card">
+        <header>
+          <div>
+            <p>Before You Design</p>
+            <h2>Mars Habitat Design Platform Tutorial</h2>
+          </div>
+          <button id="closeTutorialBtn" type="button">Start Designing</button>
+        </header>
+        <div class="tutorial-body">
+          <section>
+            <h3>1. Understand the mission first</h3>
+            <p>The total area is fixed at 1000 square kilometers. The platform provides tools and record boxes, but it will not calculate area, ratios, or scale for you.</p>
+          </section>
+          <section>
+            <h3>2. Set the scale</h3>
+            <p>Open Math Records and enter “1 : ____” or “On the map, 1 cm = ____ km in real life.” The canvas grid is fixed at 40 × 25, and each square is 1 cm × 1 cm on the map.</p>
+          </section>
+          <section>
+            <h3>3. Place facilities</h3>
+            <p>Drag facilities from the 8-category asset library on the left, or click an asset and then click the canvas to place it. After placement, every facility can be selected, moved, rotated, resized, and renamed.</p>
+          </section>
+          <section>
+            <h3>4. Draw functional zones</h3>
+            <p>Click Zone in the bottom toolbar, then drag on the canvas to create an area. You decide the location and size. After selecting a zone, drag the corner handles to resize it.</p>
+          </section>
+          <section>
+            <h3>5. Manually enter area</h3>
+            <p>Click a facility or zone to open the edit panel. Enter its actual area, social function, and design notes yourself.</p>
+          </section>
+          <section>
+            <h3>6. Refer to population needs</h3>
+            <p>Review the 8 resident cards and consider childcare, worship, accessibility, multilingual education, mental health, greenery, and other needs.</p>
+          </section>
+          <section>
+            <h3>7. Choose a student level</h3>
+            <p>Level 1 focuses on basic records. Level 2 supports a complete independent design. Level 3 asks for deeper explanations about fairness, resource allocation, and community values.</p>
+          </section>
+          <section>
+            <h3>8. Present and export</h3>
+            <p>Enter presentation mode when you are ready to share. Export creates a design map and project report using only the content you entered.</p>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <script src="app.js"></script>
+  </body>
+</html>
